@@ -1,0 +1,5 @@
+Alice: Hi everyone, let's get started. Did we decide on the database?
+Bob: Yes, we decided to use Supabase.
+Charlie: Actually, I think we should also look into Pinecone for the vector searches. 
+Alice: Agreed. Bob, please create the Pinecone index by tomorrow.
+Bob: Will do.
