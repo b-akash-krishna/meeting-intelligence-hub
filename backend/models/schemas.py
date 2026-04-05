@@ -1,11 +1,35 @@
-from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
+
+from pydantic import BaseModel, Field
 
 class UploadResponse(BaseModel):
     meeting_id: str
     status: str
     message: str
+
+
+class ActionItemResult(BaseModel):
+    assignee: str
+    task: str
+    deadline: Optional[str] = None
+    quote: str
+
+
+class DecisionResult(BaseModel):
+    decision_text: str
+    reasoning_context: str
+
+
+class InsightsPayload(BaseModel):
+    action_items: List[ActionItemResult]
+    decisions: List[DecisionResult]
+
+
+class MeetingInsightsResponse(BaseModel):
+    meeting_id: str
+    status: str
+    message: str
+    insights: InsightsPayload
 
 class ActionItemSchema(BaseModel):
     assignee: str = Field(description="The person responsible for the task")

@@ -2,13 +2,26 @@
 
 import { useState } from "react";
 import FileUpload from "@/components/FileUpload";
-import { Activity, Users, CheckSquare, Target } from "lucide-react";
+import ChatDrawer from "@/components/ChatDrawer";
+import { Activity, CheckSquare, Target } from "lucide-react";
+
+import type { ActionItem, Decision, UploadResponse } from "@/types/meeting";
+
+interface InsightsState {
+  meetingId: string | null;
+  actionItems: ActionItem[];
+  decisions: Decision[];
+}
 
 export default function Home() {
-  const [insights, setInsights] = useState<any>(null);
+  const [insights, setInsights] = useState<InsightsState | null>(null);
 
-  const handleUploadSuccess = (data: any) => {
-    setInsights(data);
+  const handleUploadSuccess = (data: UploadResponse) => {
+    setInsights({
+      meetingId: data.meeting_id,
+      actionItems: data.insights.action_items,
+      decisions: data.insights.decisions,
+    });
   };
 
   return (
@@ -64,7 +77,7 @@ export default function Home() {
                 <dl>
                   <dt className="text-sm font-medium text-slate-500 truncate">Action Items Extracted</dt>
                   <dd className="text-2xl font-semibold text-slate-900 dark:text-white">
-                    {insights ? insights.action_items?.length || 0 : 0}
+                    {insights ? insights.actionItems.length : 0}
                   </dd>
                 </dl>
               </div>
@@ -78,7 +91,7 @@ export default function Home() {
                 <dl>
                   <dt className="text-sm font-medium text-slate-500 truncate">Decisions Logged</dt>
                   <dd className="text-2xl font-semibold text-slate-900 dark:text-white">
-                    {insights ? insights.decisions?.length || 0 : 0}
+                    {insights ? insights.decisions.length : 0}
                   </dd>
                 </dl>
               </div>
@@ -97,7 +110,7 @@ export default function Home() {
             {/* Action Items */}
             <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 border-b pb-2">Assigned Action Items</h3>
-              {insights.action_items?.length > 0 ? (
+              {insights.actionItems.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
                     <thead>
@@ -109,7 +122,7 @@ export default function Home() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                      {insights.action_items.map((item: any, idx: number) => (
+                      {insights.actionItems.map((item, idx) => (
                         <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{item.assignee}</td>
                           <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-300">{item.task}</td>
@@ -128,9 +141,9 @@ export default function Home() {
             {/* Decisions */}
             <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 border-b pb-2">Decisions Logged</h3>
-              {insights.decisions?.length > 0 ? (
+              {insights.decisions.length > 0 ? (
                 <div className="grid gap-4 md:grid-cols-2">
-                  {insights.decisions.map((item: any, idx: number) => (
+                  {insights.decisions.map((item, idx) => (
                     <div key={idx} className="p-4 border border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950 rounded-lg">
                       <p className="font-semibold text-slate-800 dark:text-slate-200 border-b border-blue-200 dark:border-blue-800 pb-2 mb-2">{item.decision_text}</p>
                       <p className="text-sm text-slate-600 dark:text-slate-400">{item.reasoning_context}</p>
@@ -143,6 +156,8 @@ export default function Home() {
             </div>
           </div>
         )}
+        
+        <ChatDrawer meetingId={insights?.meetingId} />
       </main>
     </div>
   );

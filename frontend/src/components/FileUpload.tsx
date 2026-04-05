@@ -2,20 +2,21 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { UploadCloud, FileText, CheckCircle, AlertCircle } from "lucide-react";
+import { UploadCloud, CheckCircle, AlertCircle } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+
+import type { UploadResponse } from "@/types/meeting";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 interface FileUploadProps {
-  onUploadSuccess?: (data: any) => void;
+  onUploadSuccess?: (data: UploadResponse) => void;
 }
 
 export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
-  const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -23,7 +24,6 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
     if (acceptedFiles.length === 0) return;
     
     const selectedFile = acceptedFiles[0];
-    setFile(selectedFile);
     setStatus("uploading");
 
     const formData = new FormData();
@@ -35,17 +35,17 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
         body: formData,
       });
 
-      const data = await response.json();
+      const data: UploadResponse = await response.json();
       
       if (response.ok && data.status === "completed") {
         setStatus("success");
         setMessage(data.message);
-        if (onUploadSuccess) onUploadSuccess(data.insights || null);
+        onUploadSuccess?.(data);
       } else {
         setStatus("error");
-        setMessage(data.message || "Failed to process file.");
+        setMessage("Failed to process file.");
       }
-    } catch (err) {
+    } catch {
       setStatus("error");
       setMessage("Network error. Is the backend running?");
     }
@@ -89,7 +89,7 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
             <h3 className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">Analysis Complete</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line text-center">{message}</p>
             <button 
-              onClick={(e) => { e.stopPropagation(); setStatus("idle"); setFile(null); }}
+              onClick={(e) => { e.stopPropagation(); setStatus("idle"); }}
               className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 dark:bg-slate-800 dark:text-blue-400"
             >
               Upload Another
@@ -101,7 +101,7 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
             <h3 className="text-lg font-semibold text-red-600 dark:text-red-400">Upload Failed</h3>
             <p className="mt-2 text-sm text-red-500 dark:text-red-400 text-center">{message}</p>
             <button 
-              onClick={(e) => { e.stopPropagation(); setStatus("idle"); setFile(null); }}
+              onClick={(e) => { e.stopPropagation(); setStatus("idle"); }}
               className="mt-4 px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-md hover:bg-slate-800"
             >
               Try Again

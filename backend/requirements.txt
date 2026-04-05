@@ -5,6 +5,8 @@ sqlalchemy
 supabase
 pinecone-client
 langchain
+langchain-core
+langchain-pinecone
 langchain-google-genai
 langchain-groq
 python-multipart

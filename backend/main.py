@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import upload
+
+from api import chat, upload
 
 app = FastAPI(
     title="Meeting Intelligence Hub API",
@@ -19,6 +20,7 @@ app.add_middleware(
 
 # Include Routers
 app.include_router(upload.router, prefix="/api/v1/meetings", tags=["Meetings"])
+app.include_router(chat.router, prefix="/api/v1/chat", tags=["Chat"])
 
 @app.get("/health")
 async def health_check():
