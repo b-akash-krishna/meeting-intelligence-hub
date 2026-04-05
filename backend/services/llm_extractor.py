@@ -11,6 +11,13 @@ from models.schemas import ActionItemSchema, DecisionSchema
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 load_dotenv(dotenv_path)
 
+
+def _clear_broken_proxy_env() -> None:
+    broken_proxy = "http://127.0.0.1:9"
+    for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "GIT_HTTP_PROXY", "GIT_HTTPS_PROXY"):
+        if os.environ.get(key) == broken_proxy:
+            os.environ.pop(key, None)
+
 # We wrap the underlying schemas in a container for OpenAI structured output
 class ChunkExtraction(BaseModel):
     action_items: List[ActionItemSchema] = Field(default_factory=list, description="List of action items found in this chunk. Leave empty if none.")
@@ -40,6 +47,8 @@ RULES:
 
 @lru_cache(maxsize=1)
 def get_chat_models() -> Dict[str, Any]:
+    _clear_broken_proxy_env()
+
     try:
         from langchain_google_genai import ChatGoogleGenerativeAI
         from langchain_groq import ChatGroq
@@ -48,7 +57,7 @@ def get_chat_models() -> Dict[str, Any]:
             "Missing AI dependencies. Install backend requirements before using extraction or chat."
         ) from exc
 
-    gemini_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.0)
+    gemini_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.0)
     groq_llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.0)
     return {
         "gemini": gemini_llm,
@@ -58,15 +67,15 @@ def get_chat_models() -> Dict[str, Any]:
 
 def get_structured_extraction_chain():
     models = get_chat_models()
-    primary_structured_llm = models["gemini"].with_structured_output(ChunkExtraction)
-    fallback_structured_llm = models["groq"].with_structured_output(ChunkExtraction)
+    primary_structured_llm = models["groq"].with_structured_output(ChunkExtraction)
+    fallback_structured_llm = models["gemini"].with_structured_output(ChunkExtraction)
     robust_llm = primary_structured_llm.with_fallbacks([fallback_structured_llm])
     return get_extraction_prompt() | robust_llm
 
 
 def get_chat_llm():
     models = get_chat_models()
-    return models["gemini"].with_fallbacks([models["groq"]])
+    return models["groq"].with_fallbacks([models["gemini"]])
 
 async def extract_from_chunk(chunk: Dict) -> Dict:
     """Extracts data from a single chunk."""

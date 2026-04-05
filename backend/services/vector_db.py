@@ -10,8 +10,17 @@ load_dotenv(dotenv_path)
 index_name = os.getenv("PINECONE_INDEX_NAME", "meeting-hub")
 
 
+def _clear_broken_proxy_env() -> None:
+    broken_proxy = "http://127.0.0.1:9"
+    for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "GIT_HTTP_PROXY", "GIT_HTTPS_PROXY"):
+        if os.environ.get(key) == broken_proxy:
+            os.environ.pop(key, None)
+
+
 @lru_cache(maxsize=1)
 def get_embeddings():
+    _clear_broken_proxy_env()
+
     try:
         from langchain_google_genai import GoogleGenerativeAIEmbeddings
     except ModuleNotFoundError as exc:
@@ -19,18 +28,27 @@ def get_embeddings():
             "Missing AI dependencies. Install backend requirements before using vector search."
         ) from exc
 
-    return GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+    class ReducedDimensionEmbeddings(GoogleGenerativeAIEmbeddings):
+        def embed_documents(self, texts, **kwargs):
+            kwargs.setdefault("output_dimensionality", 768)
+            return super().embed_documents(texts, **kwargs)
+
+        def embed_query(self, text, **kwargs):
+            kwargs.setdefault("output_dimensionality", 768)
+            return super().embed_query(text, **kwargs)
+
+    return ReducedDimensionEmbeddings(model="models/gemini-embedding-001")
 
 
 def get_vector_store():
     try:
-        from langchain_pinecone import PineconeVectorStore
+        from langchain_pinecone import Pinecone
     except ModuleNotFoundError as exc:
         raise RuntimeError(
             "Missing Pinecone integration dependency. Install backend requirements before using vector search."
         ) from exc
 
-    return PineconeVectorStore(index_name=index_name, embedding=get_embeddings())
+    return Pinecone(index_name=index_name, embedding=get_embeddings())
 
 
 def build_citation(chunk: Dict) -> str:
@@ -42,25 +60,27 @@ def upsert_transcript_chunks(meeting_id: str, chunks: List[Dict]):
     if not chunks:
         return
 
-    from langchain_core.documents import Document
-
-    documents = []
+    texts = []
+    metadatas = []
+    ids = []
     for idx, chunk in enumerate(chunks):
         citation = build_citation(chunk)
-        documents.append(
-            Document(
-                page_content=f"{citation}: {chunk['text']}",
-                metadata={
-                    "meeting_id": meeting_id,
-                    "speaker": chunk["speaker"],
-                    "start_time": chunk["start_time"],
-                    "end_time": chunk["end_time"],
-                    "citation": citation,
-                    "chunk_index": idx,
-                },
-            )
+        texts.append(f"{citation}: {chunk['text']}")
+        metadatas.append(
+            {
+                "meeting_id": meeting_id,
+                "speaker": chunk["speaker"],
+                "start_time": chunk["start_time"],
+                "end_time": chunk["end_time"],
+                "citation": citation,
+                "chunk_index": idx,
+                "text": f"{citation}: {chunk['text']}",
+            }
         )
+        ids.append(f"{meeting_id}-{idx}")
 
-    print(f"[{meeting_id}] Embedding and storing {len(documents)} chunks to Pinecone...")
+    print(f"[{meeting_id}] Embedding and storing {len(texts)} chunks to Pinecone...")
+    embeddings = get_embeddings().embed_documents(texts)
     vector_store = get_vector_store()
-    vector_store.add_documents(documents)
+    vectors = list(zip(ids, embeddings, metadatas))
+    vector_store._index.upsert(vectors=vectors)
