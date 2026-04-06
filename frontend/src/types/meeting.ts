@@ -10,9 +10,28 @@ export interface Decision {
   reasoning_context: string;
 }
 
+export interface SentimentTimelinePoint {
+  window_label: string;
+  start_time: string;
+  end_time: string;
+  vibe: string;
+  intensity: number;
+  chunk_count: number;
+}
+
+export interface SpeakerSentimentSummary {
+  speaker: string;
+  dominant_vibe: string;
+  engagement: number;
+  sentiment_score: number;
+}
+
 export interface InsightsPayload {
   action_items: ActionItem[];
   decisions: Decision[];
+  overall_vibe: string;
+  timeline: SentimentTimelinePoint[];
+  speaker_summary: SpeakerSentimentSummary[];
 }
 
 export interface UploadResponse {

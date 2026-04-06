@@ -1,0 +1,239 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.200
+<v Maya> Alright, uh, can everyone hear me okay? I think Priya is still joining.
+
+00:00:05.200 --> 00:00:08.900
+<v System> [background notification sound]
+
+00:00:08.900 --> 00:00:15.600
+<v Daniel> Yep, I can hear you. There's a little echo, though. Maybe someone has two tabs open?
+
+00:00:15.600 --> 00:00:19.200
+<v Priya> Sorry, that was me, one sec, muting the browser.
+
+00:00:19.200 --> 00:00:24.100
+<v Maya> Great. Let's get started. This is the weekly launch readiness sync for the mobile checkout update.
+
+00:00:24.100 --> 00:00:30.700
+<v Maya> Main things today: payment failure spike, App Store submission timing, and whether we're still okay for the June 18 rollout.
+
+00:00:30.700 --> 00:00:36.900
+<v Ethan> Before we jump in, quick note, the dashboard numbers I shared last night were incomplete. Mixpanel lagged by like, forty minutes.
+
+00:00:36.900 --> 00:00:45.500
+<v Maya> Okay, thanks. Let's start with incidents. Daniel, can you walk us through the payment issue from yesterday?
+
+00:00:45.500 --> 00:00:57.200
+<v Daniel> Sure. Between roughly 3:10 and 4:00 PM, card authorization failures went from our normal three-point-two percent to about eleven percent on Android only.
+
+00:00:57.200 --> 00:01:04.800
+<v Daniel> We traced most of it to the new retry logic after token refresh. In some cases the client was sending the old cart hash.
+
+00:01:04.800 --> 00:01:11.300
+<v Priya> Wait, when you say old cart hash, do you mean stale state from local storage or from the server payload?
+
+00:01:11.300 --> 00:01:18.600
+<v Daniel> Local storage, mostly. There are two edge cases where it might also happen if the app resumes from background after more than thirty minutes.
+
+00:01:18.600 --> 00:01:22.900
+<v Leo> Sorry, can you repeat the exact window? I was writing something else down.
+
+00:01:22.900 --> 00:01:28.700
+<v Daniel> Yeah, around 3:10 to 4:00 PM yesterday, India time.
+
+00:01:28.700 --> 00:01:35.100
+<v Maya> And current status? Is this still happening in production right now?
+
+00:01:35.100 --> 00:01:43.200
+<v Daniel> No, we feature-flagged the retry path off at 4:18 PM, and rates dropped back to baseline within, maybe, eight minutes.
+
+00:01:43.200 --> 00:01:50.400
+<v Ethan> I checked again this morning. The failed-payment trend is normal now, though conversion for returning Android users is still a bit soft.
+
+00:01:50.400 --> 00:01:55.000
+<v Maya> Soft meaning how much? Sorry, your audio cut out for a second.
+
+00:01:55.000 --> 00:02:04.100
+<v Ethan> About one-point-four percent below last Thursday. Could be noise, could be residual confusion from users who hit the failure state yesterday.
+
+00:02:04.100 --> 00:02:12.500
+<v Priya> From QA side, we reproduced the bug on version 5.12 beta with saved cards, but not on fresh installs.
+
+00:02:12.500 --> 00:02:19.200
+<v Maya> Okay. So I think the real question is do we still ship the revised checkout on June 18, or do we push a week?
+
+00:02:19.200 --> 00:02:27.600
+<v Leo> Marketing really wants June 18 because the campaign assets and partner emails are already timed around that date.
+
+00:02:27.600 --> 00:02:33.900
+<v Maya> Understood, but we are not launching a broken experience because a newsletter is scheduled.
+
+00:02:33.900 --> 00:02:41.800
+<v Leo> No, agreed, I’m not arguing that. I just want us to be explicit about the downstream impact if we slip.
+
+00:02:41.800 --> 00:02:50.500
+<v Priya> If Daniel's fix lands today, QA can run the full checkout regression by tomorrow evening. Accessibility pass may spill into Saturday, though.
+
+00:02:50.500 --> 00:02:58.600
+<v Maya> Saturday is okay if needed. I’d rather pay overtime than carry a risky payment bug into launch week.
+
+00:02:58.600 --> 00:03:08.900
+<v System> [keyboard typing] [someone joins call]
+
+00:03:08.900 --> 00:03:13.700
+<v Arjun> Sorry I'm late. I was on with legal about the updated refund language.
+
+00:03:13.700 --> 00:03:20.300
+<v Maya> Fine, we’re on launch risk. Arjun, any blocker from legal or compliance for the new checkout copy?
+
+00:03:20.300 --> 00:03:27.100
+<v Arjun> Not a blocker, but they want one line adjusted in the order review screen. I already dropped the proposed wording in Slack.
+
+00:03:27.100 --> 00:03:33.800
+<v Daniel> That’s a client-side string change only. Easy enough.
+
+00:03:33.800 --> 00:03:40.400
+<v Priya> As long as the string doesn't overflow on smaller screens. The German locale was already tight there.
+
+00:03:40.400 --> 00:03:45.600
+<v Maya> Good catch. Add German and French to the verification checklist.
+
+00:03:45.600 --> 00:03:53.500
+<v Ethan> On App Store timing, iOS build can go out today, but if we want the Android hotfix bundled, that means one release train, not two.
+
+00:03:53.500 --> 00:04:01.300
+<v Maya> What does that do to timing, exactly?
+
+00:04:01.300 --> 00:04:10.800
+<v Ethan> If we bundle both platforms with the checkout fix, internal cutoff should be tomorrow 2 PM. Otherwise we risk missing review buffers.
+
+00:04:10.800 --> 00:04:16.900
+<v Arjun> Sorry, is that tomorrow 2 PM local for us or Pacific? Because Apple review timing always gets confusing.
+
+00:04:16.900 --> 00:04:21.500
+<v Ethan> Our local, India time. I already built in the timezone difference.
+
+00:04:21.500 --> 00:04:30.400
+<v Leo> If we miss June 18, when's the next realistic date? June 25?
+
+00:04:30.400 --> 00:04:38.700
+<v Maya> Probably June 25, yes. I don't want a random mid-cycle launch without support and analytics watching closely.
+
+00:04:38.700 --> 00:04:47.800
+<v Daniel> Honestly, I think we can still make June 18 if we keep the retry feature disabled and ship the stale-hash fix in the same release.
+
+00:04:47.800 --> 00:04:54.900
+<v Priya> I mostly agree, but only if we also add a specific test for app resume after thirty-plus minutes. That's where the weirdness showed up.
+
+00:04:54.900 --> 00:05:02.300
+<v Maya> Okay, let's turn that into a condition. We keep June 18 unless regression or resume-state testing fails.
+
+00:05:02.300 --> 00:05:08.600
+<v Leo> That's enough for me. I just need a final go or no-go by Monday for campaign scheduling.
+
+00:05:08.600 --> 00:05:15.900
+<v Maya> You'll have it by Monday 11 AM. Hold me to that.
+
+00:05:15.900 --> 00:05:22.500
+<v Arjun> Also, support asked whether we should prepare a macro in case users mention duplicate charges.
+
+00:05:22.500 --> 00:05:31.700
+<v Daniel> We didn't observe duplicate charges, only authorization failures. But yes, a precautionary macro is probably smart.
+
+00:05:31.700 --> 00:05:36.800
+<v Maya> Agreed. Let's prepare it, but wording should say "if you saw a failed payment" not "if you were charged twice."
+
+00:05:36.800 --> 00:05:43.200
+<v Priya> Can someone own the regression sheet updates? Mine has old column names from last sprint.
+
+00:05:43.200 --> 00:05:49.900
+<v Maya> Leo, can you clean up the sheet and add the launch-decision column before noon?
+
+00:05:49.900 --> 00:05:53.000
+<v Leo> Yes, I’ll do that before noon.
+
+00:05:53.000 --> 00:06:01.800
+<v Maya> Daniel, I need the Android fix PR up by 1 PM, even if it's still marked draft.
+
+00:06:01.800 --> 00:06:06.400
+<v Daniel> Draft PR by 1 PM, final by, realistically, 3 PM.
+
+00:06:06.400 --> 00:06:12.200
+<v Maya> Fine. Priya, can QA start smoke testing on the draft build, then full regression after merge?
+
+00:06:12.200 --> 00:06:18.900
+<v Priya> Yes, assuming I have a stable build by late afternoon.
+
+00:06:18.900 --> 00:06:25.100
+<v Ethan> I’ll monitor conversion and payment metrics every two hours today and post in the launch channel.
+
+00:06:25.100 --> 00:06:29.400
+<v Maya> Great. Arjun, please draft the support macro and get legal to bless the wording.
+
+00:06:29.400 --> 00:06:34.700
+<v Arjun> Yep, I can send a draft by 4 PM.
+
+00:06:34.700 --> 00:06:42.000
+<v System> [coughing] [chair movement]
+
+00:06:42.000 --> 00:06:49.300
+<v Leo> One small thing, do we still want the in-app banner saying "faster checkout" on day one? It feels a bit risky given yesterday.
+
+00:06:49.300 --> 00:06:56.700
+<v Maya> Good question. Let's not lead with "faster." Let's change the copy to "updated checkout experience."
+
+00:06:56.700 --> 00:07:03.100
+<v Leo> Okay, I’ll update creative and resend the mock.
+
+00:07:03.100 --> 00:07:11.600
+<v Priya> Sorry, I know we're almost at time, but the beta crash on the promo-code screen, is that in scope for launch or separate?
+
+00:07:11.600 --> 00:07:19.800
+<v Daniel> Separate issue. It’s annoying but low volume, and not caused by this checkout work. Still, I have a fix in another branch.
+
+00:07:19.800 --> 00:07:27.300
+<v Maya> Not for this release unless it becomes severe. Let's keep the launch branch narrow.
+
+00:07:27.300 --> 00:07:33.800
+<v Ethan> I need to drop in thirty seconds. Anything else on metrics before I go?
+
+00:07:33.800 --> 00:07:40.200
+<v Maya> No, just post the noon update and flag me directly if Android failure rate goes above five percent again.
+
+00:07:40.200 --> 00:07:45.900
+<v Ethan> Got it.
+
+00:07:45.900 --> 00:07:53.700
+<v Arjun> Actually, one last item. Finance asked when the vendor invoice for the third-party fraud tool gets approved.
+
+00:07:53.700 --> 00:08:00.400
+<v Maya> Not this meeting, please. Put it in the ops sync unless it affects launch.
+
+00:08:00.400 --> 00:08:08.200
+<v Arjun> It doesn't. I'll move it.
+
+00:08:08.200 --> 00:08:14.600
+<v Maya> Okay, recapping quickly: launch date stays June 18 provisionally, Daniel owns the stale-hash fix, Priya owns validation,
+Leo updates the sheet and creative, Ethan monitors metrics, Arjun drafts support messaging.
+
+00:08:14.600 --> 00:08:21.900
+<v Maya> Final go or no-go decision Monday by 11 AM. Anything critical I missed?
+
+00:08:21.900 --> 00:08:27.100
+<v Daniel> Nope.
+
+00:08:27.100 --> 00:08:28.900
+<v Priya> All good.
+
+00:08:28.900 --> 00:08:30.000
+<v Leo> Good here.
+
+00:08:30.000 --> 00:08:31.100
+<v Arjun> Covered.
+
+00:08:31.100 --> 00:08:33.500
+<v Maya> Great, thanks everyone.
+
+00:08:33.500 --> 00:08:35.000
+<v System> [call ended]

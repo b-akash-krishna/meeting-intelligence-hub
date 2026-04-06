@@ -18,6 +18,9 @@ def _clear_broken_proxy_env() -> None:
         if os.environ.get(key) == broken_proxy:
             os.environ.pop(key, None)
 
+
+MAX_EXTRACTION_CONCURRENCY = 3
+
 # We wrap the underlying schemas in a container for OpenAI structured output
 class ChunkExtraction(BaseModel):
     action_items: List[ActionItemSchema] = Field(default_factory=list, description="List of action items found in this chunk. Leave empty if none.")
@@ -111,10 +114,31 @@ async def extract_from_chunk(chunk: Dict) -> Dict:
         return {"actions": [], "decisions": []}
 
 
+def _should_skip_chunk(chunk: Dict) -> bool:
+    text = chunk.get("text", "").strip()
+    speaker = chunk.get("speaker", "").strip().lower()
+
+    if not text:
+        return True
+    if speaker == "system":
+        return True
+    if len(text) < 20 and "[" in text and "]" in text:
+        return True
+    return False
+
+
+async def _extract_with_limit(chunk: Dict, semaphore: asyncio.Semaphore) -> Dict:
+    if _should_skip_chunk(chunk):
+        return {"actions": [], "decisions": []}
+
+    async with semaphore:
+        return await extract_from_chunk(chunk)
+
+
 async def process_transcript_chunks(chunks: List[Dict]) -> Dict:
-    """Takes a list of parsed chunks, runs them in parallel, and consolidates the results."""
-    # Process concurrently
-    tasks = [extract_from_chunk(chunk) for chunk in chunks]
+    """Takes parsed chunks, rate-limits extraction calls, and consolidates results."""
+    semaphore = asyncio.Semaphore(MAX_EXTRACTION_CONCURRENCY)
+    tasks = [_extract_with_limit(chunk, semaphore) for chunk in chunks]
     results = await asyncio.gather(*tasks)
     
     all_actions = []
