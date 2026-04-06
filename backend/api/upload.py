@@ -1,6 +1,7 @@
 from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile
 
 from models.schemas import MeetingInsightsResponse
+from services.sentiment_analyzer import analyze_transcript_sentiment
 from utils.parser import parse_vtt, parse_txt
 from services.llm_extractor import process_transcript_chunks
 from services.vector_db import upsert_transcript_chunks
@@ -31,8 +32,10 @@ async def upload_transcript(background_tasks: BackgroundTasks, file: UploadFile 
     # We use a background task so the frontend doesn't hang waiting for Pinecone IO.
     background_tasks.add_task(upsert_transcript_chunks, meeting_id, chunks)
     
-    # 2. Extract Action Items securely via LLM Fallbacks
-    insights = await process_transcript_chunks(chunks)
+    # 2. Extract Action Items securely via LLM fallbacks
+    extraction_insights = await process_transcript_chunks(chunks)
+    sentiment_insights = analyze_transcript_sentiment(chunks)
+    insights = {**extraction_insights, **sentiment_insights}
     
     return {
         "meeting_id": meeting_id, 

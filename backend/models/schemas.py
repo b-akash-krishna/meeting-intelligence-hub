@@ -20,9 +20,28 @@ class DecisionResult(BaseModel):
     reasoning_context: str
 
 
+class SentimentTimelinePoint(BaseModel):
+    window_label: str
+    start_time: str
+    end_time: str
+    vibe: str
+    intensity: int
+    chunk_count: int
+
+
+class SpeakerSentimentSummary(BaseModel):
+    speaker: str
+    dominant_vibe: str
+    engagement: int
+    sentiment_score: int
+
+
 class InsightsPayload(BaseModel):
     action_items: List[ActionItemResult]
     decisions: List[DecisionResult]
+    overall_vibe: str
+    timeline: List[SentimentTimelinePoint]
+    speaker_summary: List[SpeakerSentimentSummary]
 
 
 class MeetingInsightsResponse(BaseModel):
