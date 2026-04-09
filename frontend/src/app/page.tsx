@@ -3,6 +3,7 @@
 import { useState } from "react";
 import FileUpload from "@/components/FileUpload";
 import ChatDrawer from "@/components/ChatDrawer";
+import { ActionItemPanel, DecisionPanel } from "@/components/InsightPanels";
 import { Activity, CheckSquare, Download, Target, TrendingUp, Users } from "lucide-react";
 
 import type {
@@ -235,32 +236,7 @@ export default function Home() {
                   <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">Assigned Action Items</h3>
                 </div>
               </div>
-              {insights.actionItems.length > 0 ? (
-                <div className="mt-5 overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[color:var(--line)]">
-                    <thead>
-                      <tr>
-                        <th className="px-5 py-3 text-left text-[0.7rem] font-medium tracking-[0.18em] uppercase ink-muted">Assignee</th>
-                        <th className="px-5 py-3 text-left text-[0.7rem] font-medium tracking-[0.18em] uppercase ink-muted">Task</th>
-                        <th className="px-5 py-3 text-left text-[0.7rem] font-medium tracking-[0.18em] uppercase ink-muted">Deadline</th>
-                        <th className="px-5 py-3 text-left text-[0.7rem] font-medium tracking-[0.18em] uppercase ink-muted">Source Citation</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[color:var(--line)]">
-                      {insights.actionItems.map((item, idx) => (
-                        <tr key={idx} className="hover:bg-white/50 dark:hover:bg-slate-900/25">
-                          <td className="px-5 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">{item.assignee}</td>
-                          <td className="px-5 py-4 text-sm ink-muted">{item.task}</td>
-                          <td className="px-5 py-4 whitespace-nowrap text-sm font-semibold text-[color:var(--accent-warm)]">{item.deadline || "Not Specified"}</td>
-                          <td className="px-5 py-4 text-xs italic text-slate-500 dark:text-slate-400">{item.quote}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="mt-5 text-sm ink-muted italic">No action items were assigned in this transcript.</p>
-              )}
+              <ActionItemPanel items={insights.actionItems} />
             </div>
 
             <div className="panel rounded-[1.75rem] p-6">
@@ -268,19 +244,7 @@ export default function Home() {
                 <p className="section-title">Decision Register</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">Decisions Logged</h3>
               </div>
-              {insights.decisions.length > 0 ? (
-                <div className="mt-5 grid gap-4 md:grid-cols-2">
-                  {insights.decisions.map((item, idx) => (
-                    <div key={idx} className="panel-strong rounded-[1.25rem] p-5">
-                      <p className="text-base font-semibold text-slate-900 dark:text-slate-100">{item.decision_text}</p>
-                      <div className="accent-rule mt-3 mb-3 w-20" />
-                      <p className="text-sm leading-6 ink-muted">{item.reasoning_context}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-5 text-sm ink-muted italic">No final decisions were identified.</p>
-              )}
+              <DecisionPanel items={insights.decisions} />
             </div>
 
             <div className="grid gap-8 xl:grid-cols-[1.4fr_1fr]">
