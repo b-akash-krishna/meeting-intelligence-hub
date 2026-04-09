@@ -64,7 +64,7 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold tracking-[0.08em] uppercase text-white shadow-xl shadow-slate-900/20 transition hover:opacity-90"
+          className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold tracking-[0.08em] uppercase text-white shadow-xl shadow-[color:var(--shadow-accent)] transition hover:opacity-90"
         >
           <MessageSquare className="h-4 w-4" />
           Ask Assistant
@@ -74,7 +74,7 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
       {/* Slide-out Drawer */}
       <div 
         className={cn(
-          "fixed top-0 right-0 z-50 flex h-full w-full transform flex-col border-l border-[color:var(--line)] bg-[color:var(--surface-strong)] shadow-2xl transition-transform duration-300 ease-in-out sm:w-[28rem]",
+          "fixed top-0 right-0 z-50 flex h-full w-full transform flex-col border-l border-[color:var(--line)] bg-[color:var(--surface-strong)] shadow-2xl transition-transform duration-300 ease-in-out sm:w-[29rem]",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -84,10 +84,10 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
             <Bot className="h-5 w-5 text-[color:var(--accent)]" />
             <div>
               <p className="section-title">Conversation Layer</p>
-              <h2 className="font-semibold text-slate-800 dark:text-slate-100">Meeting Intelligence Chat</h2>
+              <h2 className="font-semibold text-slate-900">Meeting Intelligence Chat</h2>
             </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className="rounded-full border border-[color:var(--line)] p-2 text-slate-500 hover:text-red-500">
+          <button onClick={() => setIsOpen(false)} className="rounded-full border border-[color:var(--line)] p-2 text-slate-500 transition hover:border-rose-200 hover:text-rose-600">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -111,7 +111,7 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
                   "max-w-[85%] rounded-[1.35rem] px-4 py-3 text-sm shadow-sm",
                   msg.role === "human"
                     ? "rounded-br-md bg-[color:var(--accent)] text-white"
-                    : "rounded-bl-md border border-[color:var(--line)] bg-white/70 text-slate-800 dark:bg-slate-900/40 dark:text-slate-200"
+                    : "rounded-bl-md border border-[color:var(--line)] bg-white/82 text-slate-800"
                 )}>
                   <p className="whitespace-pre-wrap">{msg.text}</p>
                   
@@ -128,8 +128,8 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
                   )}
                 </div>
 
-                {msg.role === "human" && <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--line)] bg-white/70 dark:bg-slate-900/40">
-                  <User className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+                {msg.role === "human" && <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--line)] bg-white/80">
+                  <User className="h-4 w-4 text-slate-600" />
                 </div>}
               </div>
             ))
@@ -140,7 +140,7 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--accent-soft)]">
                 <Bot className="h-4 w-4 text-[color:var(--accent)]" />
               </div>
-              <div className="flex items-center space-x-2 rounded-[1.35rem] rounded-bl-md border border-[color:var(--line)] bg-white/70 px-4 py-3 text-slate-500 dark:bg-slate-900/40">
+              <div className="flex items-center space-x-2 rounded-[1.35rem] rounded-bl-md border border-[color:var(--line)] bg-white/82 px-4 py-3 text-slate-500">
                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-100"></div>
                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-200"></div>
@@ -151,14 +151,14 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
 
         {/* Input Bar */}
         <div className="border-t border-[color:var(--line)] bg-[color:var(--surface)] p-5">
-          <div className="flex items-center space-x-2 rounded-[1.1rem] border border-[color:var(--line)] bg-white/70 px-2 py-1 shadow-inner dark:bg-slate-900/40">
+          <div className="flex items-center space-x-2 rounded-[1.1rem] border border-[color:var(--line)] bg-white/82 px-2 py-1 shadow-inner">
             <input
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleSend()}
               placeholder="e.g. What did Bob block on?"
-              className="flex-1 border-none bg-transparent px-3 py-2 text-sm text-slate-800 outline-none dark:text-slate-200 placeholder:text-slate-400"
+              className="flex-1 border-none bg-transparent px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
             />
             <button 
               onClick={handleSend}
