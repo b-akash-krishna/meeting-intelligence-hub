@@ -23,10 +23,10 @@ interface InsightsState {
 }
 
 const vibeStyles: Record<string, string> = {
-  Collaborative: "bg-emerald-100 text-emerald-700 border border-emerald-200",
-  Conflict: "bg-rose-100 text-rose-700 border border-rose-200",
-  Uncertainty: "bg-amber-100 text-amber-700 border border-amber-200",
-  Neutral: "bg-slate-100 text-slate-700 border border-slate-200",
+  Collaborative: "bg-emerald-100 text-emerald-800 border border-emerald-200",
+  Conflict: "bg-rose-100 text-rose-800 border border-rose-200",
+  Uncertainty: "bg-amber-100 text-amber-800 border border-amber-200",
+  Neutral: "bg-stone-100 text-stone-700 border border-stone-200",
 };
 
 function downloadCsv(filename: string, rows: string[][]) {
@@ -77,39 +77,72 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Top Navbar */}
-      <nav className="border-b bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center mr-3">
-                <Activity className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-xl text-slate-900 dark:text-white">
+    <div className="min-h-screen text-slate-900 dark:text-slate-100">
+      <nav className="border-b border-[color:var(--line)] bg-[color:var(--surface)]/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--surface-strong)]">
+              <Activity className="h-5 w-5 text-[color:var(--accent)]" />
+            </div>
+            <div>
+              <p className="section-title">Executive Console</p>
+              <span className="text-xl font-semibold tracking-[0.02em]">
                 Meeting Intelligence Hub
               </span>
             </div>
           </div>
+          <div className="hidden rounded-full border border-[color:var(--line)] bg-white/60 px-4 py-2 text-xs tracking-[0.18em] uppercase ink-muted md:block dark:bg-slate-900/40">
+            Multi-Meeting Memory
+          </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-        
-        {/* Header Section */}
-        <div className="md:flex md:items-center md:justify-between mb-8">
-          <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold leading-7 text-slate-900 dark:text-white sm:text-3xl sm:truncate">
-              Intelligence Dashboard
+      <main className="mx-auto max-w-7xl px-5 py-8 sm:px-6 lg:px-8">
+        <section className="panel overflow-hidden rounded-[2rem] px-7 py-8 sm:px-10 lg:px-12">
+          <div className="grid gap-8 lg:grid-cols-[1.35fr_0.9fr] lg:items-end">
+            <div>
+              <p className="section-title">Classic Reporting Surface</p>
+              <h1 className="mt-4 max-w-3xl text-4xl leading-tight font-semibold text-slate-900 dark:text-white sm:text-5xl">
+                A polished command center for meeting memory, decisions, and follow-through.
+              </h1>
+              <div className="accent-rule mt-6 w-32" />
+              <p className="mt-6 max-w-2xl text-base leading-7 ink-muted">
+                Upload noisy transcripts, review structured outcomes, trace sentiment shifts, and ask grounded questions with citations. The interface is designed to read like an executive briefing, not a generic AI sandbox.
+              </p>
+            </div>
+            <div className="panel-strong rounded-[1.5rem] p-6">
+              <p className="section-title">Session Focus</p>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <p className="text-sm ink-muted">Current workflow</p>
+                  <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">Upload, inspect, ask, export</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-2xl border border-[color:var(--line)] bg-white/70 p-4 dark:bg-slate-900/40">
+                    <p className="ink-muted">Formats</p>
+                    <p className="mt-1 font-semibold">TXT / VTT</p>
+                  </div>
+                  <div className="rounded-2xl border border-[color:var(--line)] bg-white/70 p-4 dark:bg-slate-900/40">
+                    <p className="ink-muted">Exports</p>
+                    <p className="mt-1 font-semibold">CSV today</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="section-title">Intelligence Dashboard</p>
+            <h2 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-white">
+              Structured review of what happened, what matters, and what comes next.
             </h2>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Upload your raw transcripts (.txt, .vtt) to extract action items and business decisions structurally via GPT-4o-mini.
-            </p>
           </div>
           {insights && (
             <button
               onClick={handleExport}
-              className="mt-4 md:mt-0 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+              className="inline-flex items-center gap-2 self-start rounded-full border border-[color:var(--accent)] bg-[color:var(--accent)] px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90 md:self-auto"
             >
               <Download className="h-4 w-4" />
               Export CSV
@@ -117,27 +150,26 @@ export default function Home() {
           )}
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5 mb-8">
-          <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-5">
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="panel rounded-[1.5rem] p-5">
             <div className="flex items-center">
-              <div className="flex-shrink-0"><Activity className="h-6 w-6 text-slate-400" /></div>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--line)] bg-white/70 dark:bg-slate-900/40"><Activity className="h-5 w-5 text-[color:var(--accent)]" /></div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-slate-500 truncate">Meetings Analyzed</dt>
-                  <dd className="text-2xl font-semibold text-slate-900 dark:text-white">{insights ? 1 : 0}</dd>
+                  <dt className="text-sm font-medium ink-muted truncate">Meetings Analyzed</dt>
+                  <dd className="text-3xl font-semibold text-slate-900 dark:text-white">{insights ? 1 : 0}</dd>
                 </dl>
               </div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-5">
+          <div className="panel rounded-[1.5rem] p-5">
             <div className="flex items-center">
-              <div className="flex-shrink-0"><CheckSquare className="h-6 w-6 text-slate-400" /></div>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--line)] bg-white/70 dark:bg-slate-900/40"><CheckSquare className="h-5 w-5 text-[color:var(--accent)]" /></div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-slate-500 truncate">Action Items Extracted</dt>
-                  <dd className="text-2xl font-semibold text-slate-900 dark:text-white">
+                  <dt className="text-sm font-medium ink-muted truncate">Action Items Extracted</dt>
+                  <dd className="text-3xl font-semibold text-slate-900 dark:text-white">
                     {insights ? insights.actionItems.length : 0}
                   </dd>
                 </dl>
@@ -145,13 +177,13 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-5">
+          <div className="panel rounded-[1.5rem] p-5">
             <div className="flex items-center">
-              <div className="flex-shrink-0"><Target className="h-6 w-6 text-slate-400" /></div>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--line)] bg-white/70 dark:bg-slate-900/40"><Target className="h-5 w-5 text-[color:var(--accent)]" /></div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-slate-500 truncate">Decisions Logged</dt>
-                  <dd className="text-2xl font-semibold text-slate-900 dark:text-white">
+                  <dt className="text-sm font-medium ink-muted truncate">Decisions Logged</dt>
+                  <dd className="text-3xl font-semibold text-slate-900 dark:text-white">
                     {insights ? insights.decisions.length : 0}
                   </dd>
                 </dl>
@@ -159,12 +191,12 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-5">
+          <div className="panel rounded-[1.5rem] p-5">
             <div className="flex items-center">
-              <div className="flex-shrink-0"><TrendingUp className="h-6 w-6 text-slate-400" /></div>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--line)] bg-white/70 dark:bg-slate-900/40"><TrendingUp className="h-5 w-5 text-[color:var(--accent)]" /></div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-slate-500 truncate">Overall Vibe</dt>
+                  <dt className="text-sm font-medium ink-muted truncate">Overall Vibe</dt>
                   <dd className="mt-1">
                     <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${vibeStyles[insights?.overallVibe ?? "Neutral"]}`}>
                       {insights?.overallVibe ?? "Neutral"}
@@ -175,13 +207,13 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-5">
+          <div className="panel rounded-[1.5rem] p-5">
             <div className="flex items-center">
-              <div className="flex-shrink-0"><Users className="h-6 w-6 text-slate-400" /></div>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--line)] bg-white/70 dark:bg-slate-900/40"><Users className="h-5 w-5 text-[color:var(--accent)]" /></div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-slate-500 truncate">Speakers Tracked</dt>
-                  <dd className="text-2xl font-semibold text-slate-900 dark:text-white">
+                  <dt className="text-sm font-medium ink-muted truncate">Speakers Tracked</dt>
+                  <dd className="text-3xl font-semibold text-slate-900 dark:text-white">
                     {insights ? insights.speakerSummary.length : 0}
                   </dd>
                 </dl>
@@ -190,78 +222,86 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Upload Component */}
-        <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-8 mb-8">
+        <div className="mt-8 panel rounded-[2rem] p-5 sm:p-8">
           <FileUpload onUploadSuccess={handleUploadSuccess} />
         </div>
 
-        {/* Insights Results rendering tables */}
         {insights && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Action Items */}
-            <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 border-b pb-2">Assigned Action Items</h3>
+          <div className="mt-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="panel rounded-[1.75rem] p-6">
+              <div className="flex items-center justify-between gap-4 border-b border-[color:var(--line)] pb-4">
+                <div>
+                  <p className="section-title">Execution Ledger</p>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">Assigned Action Items</h3>
+                </div>
+              </div>
               {insights.actionItems.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                <div className="mt-5 overflow-x-auto">
+                  <table className="min-w-full divide-y divide-[color:var(--line)]">
                     <thead>
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Assignee</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Task</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Deadline</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Source Citation</th>
+                        <th className="px-5 py-3 text-left text-[0.7rem] font-medium tracking-[0.18em] uppercase ink-muted">Assignee</th>
+                        <th className="px-5 py-3 text-left text-[0.7rem] font-medium tracking-[0.18em] uppercase ink-muted">Task</th>
+                        <th className="px-5 py-3 text-left text-[0.7rem] font-medium tracking-[0.18em] uppercase ink-muted">Deadline</th>
+                        <th className="px-5 py-3 text-left text-[0.7rem] font-medium tracking-[0.18em] uppercase ink-muted">Source Citation</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                    <tbody className="divide-y divide-[color:var(--line)]">
                       {insights.actionItems.map((item, idx) => (
-                        <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{item.assignee}</td>
-                          <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-300">{item.task}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-red-500 font-semibold">{item.deadline || "Not Specified"}</td>
-                          <td className="px-6 py-4 text-xs italic text-slate-400 bg-slate-50 dark:bg-slate-950 rounded p-1">{item.quote}</td>
+                        <tr key={idx} className="hover:bg-white/50 dark:hover:bg-slate-900/25">
+                          <td className="px-5 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">{item.assignee}</td>
+                          <td className="px-5 py-4 text-sm ink-muted">{item.task}</td>
+                          <td className="px-5 py-4 whitespace-nowrap text-sm font-semibold text-[color:var(--accent-warm)]">{item.deadline || "Not Specified"}</td>
+                          <td className="px-5 py-4 text-xs italic text-slate-500 dark:text-slate-400">{item.quote}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 italic">No action items were assigned in this transcript.</p>
+                <p className="mt-5 text-sm ink-muted italic">No action items were assigned in this transcript.</p>
               )}
             </div>
 
-            {/* Decisions */}
-            <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 border-b pb-2">Decisions Logged</h3>
+            <div className="panel rounded-[1.75rem] p-6">
+              <div className="border-b border-[color:var(--line)] pb-4">
+                <p className="section-title">Decision Register</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">Decisions Logged</h3>
+              </div>
               {insights.decisions.length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
                   {insights.decisions.map((item, idx) => (
-                    <div key={idx} className="p-4 border border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950 rounded-lg">
-                      <p className="font-semibold text-slate-800 dark:text-slate-200 border-b border-blue-200 dark:border-blue-800 pb-2 mb-2">{item.decision_text}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">{item.reasoning_context}</p>
+                    <div key={idx} className="panel-strong rounded-[1.25rem] p-5">
+                      <p className="text-base font-semibold text-slate-900 dark:text-slate-100">{item.decision_text}</p>
+                      <div className="accent-rule mt-3 mb-3 w-20" />
+                      <p className="text-sm leading-6 ink-muted">{item.reasoning_context}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 italic">No final decisions were identified.</p>
+                <p className="mt-5 text-sm ink-muted italic">No final decisions were identified.</p>
               )}
             </div>
 
             <div className="grid gap-8 xl:grid-cols-[1.4fr_1fr]">
-              <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 border-b pb-2">Sentiment Timeline</h3>
-                <div className="space-y-4">
+              <div className="panel rounded-[1.75rem] p-6">
+                <div className="border-b border-[color:var(--line)] pb-4">
+                  <p className="section-title">Atmosphere Tracking</p>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">Sentiment Timeline</h3>
+                </div>
+                <div className="mt-5 space-y-4">
                   {insights.timeline.map((point) => (
-                    <div key={`${point.window_label}-${point.start_time}`} className="space-y-2">
+                    <div key={`${point.window_label}-${point.start_time}`} className="panel-strong rounded-[1.25rem] p-4 space-y-3">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold text-slate-900 dark:text-white">{point.window_label}</p>
-                          <p className="text-xs text-slate-500">{point.start_time} to {point.end_time}</p>
+                          <p className="text-xs ink-muted">{point.start_time} to {point.end_time}</p>
                         </div>
                         <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${vibeStyles[point.vibe] ?? vibeStyles.Neutral}`}>
                           {point.vibe}
                         </span>
                       </div>
-                      <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                      <div className="h-3 w-full overflow-hidden rounded-full bg-stone-200/80 dark:bg-slate-800">
                         <div
                           className={`h-full rounded-full ${
                             point.vibe === "Conflict"
@@ -280,18 +320,21 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800 p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 border-b pb-2">Speaker Tone</h3>
-                <div className="space-y-3">
+              <div className="panel rounded-[1.75rem] p-6">
+                <div className="border-b border-[color:var(--line)] pb-4">
+                  <p className="section-title">Voice Distribution</p>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">Speaker Tone</h3>
+                </div>
+                <div className="mt-5 space-y-3">
                   {insights.speakerSummary.map((speaker) => (
-                    <div key={speaker.speaker} className="rounded-lg border border-slate-200 dark:border-slate-800 p-4">
+                    <div key={speaker.speaker} className="panel-strong rounded-[1.25rem] p-4">
                       <div className="flex items-center justify-between gap-3">
                         <p className="font-semibold text-slate-900 dark:text-white">{speaker.speaker}</p>
                         <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${vibeStyles[speaker.dominant_vibe] ?? vibeStyles.Neutral}`}>
                           {speaker.dominant_vibe}
                         </span>
                       </div>
-                      <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
+                      <div className="mt-3 flex items-center justify-between text-sm ink-muted">
                         <span>{speaker.engagement} chunks</span>
                         <span>score {speaker.sentiment_score}</span>
                       </div>

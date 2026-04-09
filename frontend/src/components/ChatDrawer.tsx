@@ -64,9 +64,9 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 p-4 bg-blue-600 text-white rounded-full shadow-xl hover:bg-blue-700 transition shadow-blue-600/30 font-semibold flex items-center"
+          className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold tracking-[0.08em] uppercase text-white shadow-xl shadow-slate-900/20 transition hover:opacity-90"
         >
-          <MessageSquare className="w-5 h-5 mr-2" />
+          <MessageSquare className="h-4 w-4" />
           Ask Assistant
         </button>
       )}
@@ -74,45 +74,50 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
       {/* Slide-out Drawer */}
       <div 
         className={cn(
-          "fixed top-0 right-0 h-full w-full sm:w-96 bg-white dark:bg-slate-900 shadow-2xl border-l border-slate-200 dark:border-slate-800 transition-transform transform duration-300 ease-in-out z-50 flex flex-col",
+          "fixed top-0 right-0 z-50 flex h-full w-full transform flex-col border-l border-[color:var(--line)] bg-[color:var(--surface-strong)] shadow-2xl transition-transform duration-300 ease-in-out sm:w-[28rem]",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+        <div className="flex items-center justify-between border-b border-[color:var(--line)] bg-[color:var(--surface)] px-5 py-4">
           <div className="flex items-center space-x-2">
-            <Bot className="w-6 h-6 text-blue-600" />
-            <h2 className="font-semibold text-slate-800 dark:text-slate-100">Meeting Intelligence Chat</h2>
+            <Bot className="h-5 w-5 text-[color:var(--accent)]" />
+            <div>
+              <p className="section-title">Conversation Layer</p>
+              <h2 className="font-semibold text-slate-800 dark:text-slate-100">Meeting Intelligence Chat</h2>
+            </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-red-500 rounded p-1">
-            <X className="w-5 h-5" />
+          <button onClick={() => setIsOpen(false)} className="rounded-full border border-[color:var(--line)] p-2 text-slate-500 hover:text-red-500">
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Chat History Area */}
-        <div className="flex-1 p-4 overflow-y-auto bg-white dark:bg-slate-900 space-y-6">
+        <div className="flex-1 space-y-6 overflow-y-auto bg-transparent p-5">
           {history.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-slate-400 space-y-3">
-              <MessageSquare className="w-10 h-10 opacity-20" />
-              <p className="text-center text-sm">Ask questions across your entire history of transcripts!</p>
+            <div className="flex h-full flex-col items-center justify-center space-y-3 text-slate-400">
+              <MessageSquare className="h-10 w-10 opacity-20" />
+              <p className="max-w-xs text-center text-sm ink-muted">Ask grounded questions across the uploaded meeting context and review the cited evidence beneath each response.</p>
             </div>
           ) : (
             history.map((msg, idx) => (
               <div key={idx} className={cn("flex space-x-3", msg.role === "human" ? "justify-end" : "justify-start")}>
                 
-                {msg.role === "ai" && <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
-                  <Bot className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+                {msg.role === "ai" && <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--accent-soft)]">
+                  <Bot className="h-4 w-4 text-[color:var(--accent)]" />
                 </div>}
 
                 <div className={cn(
-                  "px-4 py-3 rounded-2xl max-w-[85%] text-sm shadow-sm",
-                  msg.role === "human" ? "bg-blue-600 text-white rounded-br-none" : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-bl-none border border-slate-200 dark:border-slate-700"
+                  "max-w-[85%] rounded-[1.35rem] px-4 py-3 text-sm shadow-sm",
+                  msg.role === "human"
+                    ? "rounded-br-md bg-[color:var(--accent)] text-white"
+                    : "rounded-bl-md border border-[color:var(--line)] bg-white/70 text-slate-800 dark:bg-slate-900/40 dark:text-slate-200"
                 )}>
                   <p className="whitespace-pre-wrap">{msg.text}</p>
                   
                   {/* Sources Accordion (optional for UI) */}
                   {msg.sources && msg.sources.length > 0 && (
-                    <div className="mt-3 text-xs border-t border-slate-300 dark:border-slate-600 pt-2 text-slate-500 dark:text-slate-400">
+                    <div className="mt-3 border-t border-[color:var(--line)] pt-2 text-xs ink-muted">
                       <strong>Cited from {msg.sources.length} chunks.</strong>
                       {msg.sources.map((source, sourceIdx) => (
                         <p key={`${source.citation}-${sourceIdx}`} className="mt-1 line-clamp-2">
@@ -123,8 +128,8 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
                   )}
                 </div>
 
-                {msg.role === "human" && <div className="w-8 h-8 rounded-full bg-slate-300 dark:bg-slate-700 flex items-center justify-center shrink-0">
-                  <User className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+                {msg.role === "human" && <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--line)] bg-white/70 dark:bg-slate-900/40">
+                  <User className="h-4 w-4 text-slate-600 dark:text-slate-300" />
                 </div>}
               </div>
             ))
@@ -132,10 +137,10 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
           
           {loading && (
             <div className="flex space-x-3 justify-start">
-              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
-                <Bot className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--line)] bg-[color:var(--accent-soft)]">
+                <Bot className="h-4 w-4 text-[color:var(--accent)]" />
               </div>
-              <div className="px-4 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-bl-none flex items-center space-x-2">
+              <div className="flex items-center space-x-2 rounded-[1.35rem] rounded-bl-md border border-[color:var(--line)] bg-white/70 px-4 py-3 text-slate-500 dark:bg-slate-900/40">
                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-100"></div>
                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-200"></div>
@@ -145,20 +150,20 @@ export default function ChatDrawer({ meetingId = null }: ChatDrawerProps) {
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-          <div className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-2 py-1 shadow-inner border border-slate-200 dark:border-slate-700">
+        <div className="border-t border-[color:var(--line)] bg-[color:var(--surface)] p-5">
+          <div className="flex items-center space-x-2 rounded-[1.1rem] border border-[color:var(--line)] bg-white/70 px-2 py-1 shadow-inner dark:bg-slate-900/40">
             <input
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleSend()}
               placeholder="e.g. What did Bob block on?"
-              className="flex-1 bg-transparent border-none outline-none text-sm px-3 py-2 text-slate-800 dark:text-slate-200 placeholder-slate-400"
+              className="flex-1 border-none bg-transparent px-3 py-2 text-sm text-slate-800 outline-none dark:text-slate-200 placeholder:text-slate-400"
             />
             <button 
               onClick={handleSend}
               disabled={loading || !query.trim()}
-              className="p-2 rounded bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition"
+              className="rounded-full bg-[color:var(--accent)] p-2 text-white transition hover:opacity-90 disabled:opacity-50"
             >
               <Send className="w-4 h-4" />
             </button>
