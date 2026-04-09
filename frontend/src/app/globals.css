@@ -86,6 +86,38 @@ input {
   box-shadow: 0 18px 44px rgba(38, 32, 24, 0.06);
 }
 
+.hero-panel {
+  background:
+    linear-gradient(135deg, rgba(255, 252, 247, 0.95), rgba(244, 239, 230, 0.82)),
+    var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 60px rgba(38, 32, 24, 0.08);
+}
+
+.panel-link {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.panel-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(35, 64, 90, 0.24);
+  box-shadow: 0 24px 52px rgba(35, 64, 90, 0.12);
+}
+
+.metric-badge {
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+}
+
 .section-title {
   letter-spacing: 0.08em;
   text-transform: uppercase;

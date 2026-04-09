@@ -41,6 +41,16 @@ export interface UploadResponse {
   insights: InsightsPayload;
 }
 
+export interface MeetingSession {
+  meetingId: string | null;
+  statusMessage: string;
+  actionItems: ActionItem[];
+  decisions: Decision[];
+  overallVibe: string;
+  timeline: SentimentTimelinePoint[];
+  speakerSummary: SpeakerSentimentSummary[];
+}
+
 export interface ChatMessage {
   role: "human" | "ai";
   text: string;
