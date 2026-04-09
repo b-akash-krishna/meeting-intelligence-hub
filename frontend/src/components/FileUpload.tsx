@@ -61,48 +61,55 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
   });
 
   return (
-    <div className="w-full max-w-2xl mx-auto mt-2">
+    <div className="w-full max-w-3xl mx-auto mt-2">
       <div 
         {...getRootProps()} 
         className={cn(
-          "relative flex flex-col items-center justify-center w-full p-12 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ease-in-out bg-white dark:bg-slate-950",
-          isDragActive ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : "border-slate-300 hover:border-blue-400 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-blue-500 dark:hover:bg-slate-900",
-          isDragReject ? "border-red-500 bg-red-50" : "",
+          "panel-strong relative overflow-hidden flex flex-col items-center justify-center w-full rounded-[2rem] cursor-pointer transition-all duration-300 ease-out px-8 py-14",
+          isDragActive ? "border-[color:var(--accent)] bg-[color:var(--accent-soft)]" : "hover:-translate-y-0.5 hover:border-[color:var(--accent-warm)]",
+          isDragReject ? "border-rose-400 bg-rose-50" : "",
           status === "uploading" ? "opacity-50 pointer-events-none" : ""
         )}
       >
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[color:var(--accent-soft)] to-transparent opacity-70" />
         <input {...getInputProps()} />
         
         {status === "idle" || status === "uploading" ? (
           <>
-            <UploadCloud className={cn("w-12 h-12 mb-4", isDragActive ? "text-blue-500 delay-75 animate-bounce" : "text-slate-400")} />
-            <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200">
+            <span className="section-title mb-4">Transcript Intake</span>
+            <UploadCloud className={cn("w-12 h-12 mb-5", isDragActive ? "text-[color:var(--accent)] delay-75 animate-bounce" : "text-[color:var(--accent-warm)]")} />
+            <h3 className="text-2xl font-semibold text-center text-slate-800 dark:text-slate-100">
               {status === "uploading" ? "AI Analyzing Transcript..." : isDragActive ? "Drop the transcript here" : "Drag & drop a transcript"}
             </h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Supported formats: .vtt, .txt
+            <p className="mt-3 max-w-xl text-center text-sm ink-muted">
+              Upload realistic meeting notes in `.vtt` or `.txt` format to generate actions, decisions, sentiment signals, and cited answers.
+            </p>
+            <p className="mt-6 inline-flex rounded-full border border-[color:var(--line)] bg-white/70 px-4 py-2 text-xs tracking-[0.16em] uppercase ink-muted">
+              Supported formats: .vtt and .txt
             </p>
           </>
         ) : status === "success" ? (
           <>
-            <CheckCircle className="w-12 h-12 mb-4 text-emerald-500" />
-            <h3 className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">Analysis Complete</h3>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line text-center">{message}</p>
+            <span className="section-title mb-4">Processing Complete</span>
+            <CheckCircle className="w-12 h-12 mb-4 text-emerald-600" />
+            <h3 className="text-2xl font-semibold text-emerald-700 dark:text-emerald-400">Analysis Complete</h3>
+            <p className="mt-3 max-w-xl text-sm ink-muted whitespace-pre-line text-center">{message}</p>
             <button 
               onClick={(e) => { e.stopPropagation(); setStatus("idle"); }}
-              className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 dark:bg-slate-800 dark:text-blue-400"
+              className="mt-6 rounded-full border border-[color:var(--accent)] bg-[color:var(--accent)] px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
             >
               Upload Another
             </button>
           </>
         ) : (
           <>
-            <AlertCircle className="w-12 h-12 mb-4 text-red-500" />
-            <h3 className="text-lg font-semibold text-red-600 dark:text-red-400">Upload Failed</h3>
-            <p className="mt-2 text-sm text-red-500 dark:text-red-400 text-center">{message}</p>
+            <span className="section-title mb-4">Processing Error</span>
+            <AlertCircle className="w-12 h-12 mb-4 text-rose-600" />
+            <h3 className="text-2xl font-semibold text-rose-700 dark:text-rose-400">Upload Failed</h3>
+            <p className="mt-3 max-w-xl text-sm text-rose-600 dark:text-rose-400 text-center">{message}</p>
             <button 
               onClick={(e) => { e.stopPropagation(); setStatus("idle"); }}
-              className="mt-4 px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-md hover:bg-slate-800"
+              className="mt-6 rounded-full border border-slate-800 bg-slate-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-slate-800"
             >
               Try Again
             </button>
