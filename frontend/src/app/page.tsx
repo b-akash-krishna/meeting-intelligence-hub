@@ -4,7 +4,8 @@ import { useState } from "react";
 import FileUpload from "@/components/FileUpload";
 import ChatDrawer from "@/components/ChatDrawer";
 import { ActionItemPanel, DecisionPanel } from "@/components/InsightPanels";
-import { Activity, CheckSquare, Download, Target, TrendingUp, Users } from "lucide-react";
+import { Activity, CheckSquare, FileJson, FileSpreadsheet, FileText, Target, TrendingUp, Users } from "lucide-react";
+import { buildMeetingReport } from "@/lib/briefing";
 
 import type {
   ActionItem,
@@ -46,6 +47,16 @@ function downloadCsv(filename: string, rows: string[][]) {
   URL.revokeObjectURL(url);
 }
 
+function downloadText(filename: string, content: string, type = "text/plain;charset=utf-8;") {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function Home() {
   const [insights, setInsights] = useState<InsightsState | null>(null);
 
@@ -60,7 +71,18 @@ export default function Home() {
     });
   };
 
-  const handleExport = () => {
+  const report = insights
+    ? buildMeetingReport({
+        meetingId: insights.meetingId,
+        overallVibe: insights.overallVibe,
+        actionItems: insights.actionItems,
+        decisions: insights.decisions,
+        timeline: insights.timeline,
+        speakerSummary: insights.speakerSummary,
+      })
+    : null;
+
+  const handleCsvExport = () => {
     if (!insights) {
       return;
     }
@@ -68,13 +90,63 @@ export default function Home() {
     const rows: string[][] = [
       ["Section", "Field 1", "Field 2", "Field 3", "Field 4"],
       ["Meeting", "Overall Vibe", insights.overallVibe, "Meeting ID", insights.meetingId ?? ""],
-      ...insights.actionItems.map((item) => ["Action Item", item.assignee, item.task, item.deadline ?? "", item.quote]),
-      ...insights.decisions.map((item) => ["Decision", item.decision_text, item.reasoning_context, "", ""]),
+      ...(report?.actionItems ?? []).map((item) => ["Action Item", item.assignee, item.task, item.deadline ?? "", `${item.purpose} | ${item.urgency}`]),
+      ...(report?.decisions ?? []).map((item) => ["Decision", item.decision, item.reasoning, item.purpose, ""]),
       ...insights.timeline.map((point) => ["Timeline", point.window_label, `${point.start_time} - ${point.end_time}`, point.vibe, String(point.intensity)]),
       ...insights.speakerSummary.map((speaker) => ["Speaker", speaker.speaker, speaker.dominant_vibe, String(speaker.engagement), String(speaker.sentiment_score)]),
     ];
 
     downloadCsv("meeting-intelligence-export.csv", rows);
+  };
+
+  const handleJsonExport = () => {
+    if (!report) {
+      return;
+    }
+
+    downloadText("meeting-intelligence-report.json", JSON.stringify(report, null, 2), "application/json;charset=utf-8;");
+  };
+
+  const handleMarkdownExport = () => {
+    if (!report) {
+      return;
+    }
+
+    const markdown = [
+      "# Meeting Intelligence Brief",
+      "",
+      `- Meeting ID: ${report.meetingId ?? "N/A"}`,
+      `- Overall Vibe: ${report.overallVibe}`,
+      "",
+      "## Action Items",
+      ...report.actionItems.flatMap((item, index) => [
+        `### Action ${index + 1}`,
+        `- Owner: ${item.assignee}`,
+        `- Task: ${item.task}`,
+        `- Deadline: ${item.deadline ?? "No explicit deadline"}`,
+        `- Urgency: ${item.urgency}`,
+        `- Purpose: ${item.purpose}`,
+        `- Operational Intent: ${item.operationalIntent}`,
+        `- Evidence: ${item.evidence}`,
+        "",
+      ]),
+      "## Decisions",
+      ...report.decisions.flatMap((item, index) => [
+        `### Decision ${index + 1}`,
+        `- Decision: ${item.decision}`,
+        `- Purpose: ${item.purpose}`,
+        `- Reasoning: ${item.reasoning}`,
+        "",
+      ]),
+      "## Sentiment Timeline",
+      ...report.timeline.map((point) => `- ${point.window_label}: ${point.vibe} (${point.start_time} to ${point.end_time}, intensity ${point.intensity})`),
+      "",
+      "## Speaker Summary",
+      ...report.speakerSummary.map((speaker) => `- ${speaker.speaker}: ${speaker.dominant_vibe}, engagement ${speaker.engagement}, score ${speaker.sentiment_score}`),
+      "",
+    ].join("\n");
+
+    downloadText("meeting-intelligence-brief.md", markdown, "text/markdown;charset=utf-8;");
   };
 
   return (
@@ -141,13 +213,29 @@ export default function Home() {
             </h2>
           </div>
           {insights && (
-            <button
-              onClick={handleExport}
-              className="inline-flex items-center gap-2 self-start rounded-full border border-[color:var(--accent)] bg-[color:var(--accent)] px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90 md:self-auto"
-            >
-              <Download className="h-4 w-4" />
-              Export CSV
-            </button>
+            <div className="flex flex-wrap gap-3 md:justify-end">
+              <button
+                onClick={handleCsvExport}
+                className="inline-flex items-center gap-2 self-start rounded-full border border-[color:var(--accent)] bg-[color:var(--accent)] px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                Export CSV
+              </button>
+              <button
+                onClick={handleJsonExport}
+                className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-white/70 px-5 py-2.5 text-sm font-medium text-slate-800 transition hover:border-[color:var(--accent-warm)] dark:bg-slate-900/40 dark:text-slate-100"
+              >
+                <FileJson className="h-4 w-4" />
+                Export JSON
+              </button>
+              <button
+                onClick={handleMarkdownExport}
+                className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-white/70 px-5 py-2.5 text-sm font-medium text-slate-800 transition hover:border-[color:var(--accent-warm)] dark:bg-slate-900/40 dark:text-slate-100"
+              >
+                <FileText className="h-4 w-4" />
+                Briefing Note
+              </button>
+            </div>
           )}
         </div>
 

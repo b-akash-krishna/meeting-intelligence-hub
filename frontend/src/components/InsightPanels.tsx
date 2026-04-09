@@ -1,73 +1,7 @@
 "use client";
 
 import type { ActionItem, Decision } from "@/types/meeting";
-
-function classifyPurpose(text: string) {
-  const normalized = text.toLowerCase();
-
-  if (normalized.includes("fix") || normalized.includes("bug") || normalized.includes("issue")) {
-    return {
-      label: "Risk Reduction",
-      detail: "This update exists to remove delivery risk or stabilize a problem area before the next milestone.",
-    };
-  }
-
-  if (normalized.includes("update") || normalized.includes("draft") || normalized.includes("send") || normalized.includes("prepare")) {
-    return {
-      label: "Stakeholder Communication",
-      detail: "This update is meant to keep teams aligned, circulate materials, or prepare outward-facing communication.",
-    };
-  }
-
-  if (normalized.includes("test") || normalized.includes("validate") || normalized.includes("verify") || normalized.includes("check")) {
-    return {
-      label: "Quality Assurance",
-      detail: "This item supports validation, readiness checks, or confidence-building before launch or approval.",
-    };
-  }
-
-  if (normalized.includes("create") || normalized.includes("implement") || normalized.includes("build")) {
-    return {
-      label: "Execution",
-      detail: "This is a build or implementation task intended to move the workstream forward directly.",
-    };
-  }
-
-  return {
-    label: "Operational Follow-up",
-    detail: "This item helps the team maintain momentum and close the loop on a discussion outcome.",
-  };
-}
-
-function classifyUrgency(deadline: string | null) {
-  if (!deadline) {
-    return "Routine";
-  }
-
-  const normalized = deadline.toLowerCase();
-  if (normalized.includes("today") || normalized.includes("1 pm") || normalized.includes("2 pm") || normalized.includes("3 pm")) {
-    return "Immediate";
-  }
-  if (normalized.includes("tomorrow") || normalized.includes("monday")) {
-    return "Near-term";
-  }
-  return "Scheduled";
-}
-
-function deriveDecisionPurpose(decision: Decision) {
-  const combined = `${decision.decision_text} ${decision.reasoning_context}`.toLowerCase();
-
-  if (combined.includes("launch") || combined.includes("rollout") || combined.includes("release")) {
-    return "Release Governance";
-  }
-  if (combined.includes("copy") || combined.includes("creative") || combined.includes("wording")) {
-    return "Messaging Alignment";
-  }
-  if (combined.includes("timeline") || combined.includes("cutoff") || combined.includes("date")) {
-    return "Timeline Control";
-  }
-  return "Execution Direction";
-}
+import { classifyActionPurpose, classifyActionUrgency, deriveDecisionPurpose } from "@/lib/briefing";
 
 const urgencyStyles: Record<string, string> = {
   Immediate: "bg-rose-100 text-rose-800 border border-rose-200",
@@ -84,8 +18,8 @@ export function ActionItemPanel({ items }: { items: ActionItem[] }) {
   return (
     <div className="mt-5 grid gap-4">
       {items.map((item, idx) => {
-        const purpose = classifyPurpose(item.task);
-        const urgency = classifyUrgency(item.deadline);
+        const purpose = classifyActionPurpose(item.task);
+        const urgency = classifyActionUrgency(item.deadline);
 
         return (
           <article key={`${item.assignee}-${idx}`} className="panel-strong rounded-[1.35rem] p-5">
