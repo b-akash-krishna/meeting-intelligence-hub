@@ -36,15 +36,15 @@ export function ActionItemPanel({ items }: { items: ActionItem[] }) {
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               <div className="rounded-2xl border border-[color:var(--line)] bg-white/70 p-4 dark:bg-slate-900/40">
                 <p className="section-title">Owner</p>
-                <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{item.assignee}</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{item.assignee}</p>
               </div>
               <div className="rounded-2xl border border-[color:var(--line)] bg-white/70 p-4 dark:bg-slate-900/40">
                 <p className="section-title">Timeline</p>
-                <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{item.deadline || "No explicit deadline"}</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{item.deadline || "No explicit deadline"}</p>
               </div>
               <div className="rounded-2xl border border-[color:var(--line)] bg-white/70 p-4 dark:bg-slate-900/40">
                 <p className="section-title">Purpose</p>
-                <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{purpose.label}</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{purpose.label}</p>
               </div>
             </div>
 
@@ -55,7 +55,7 @@ export function ActionItemPanel({ items }: { items: ActionItem[] }) {
               </div>
               <div>
                 <p className="section-title">Evidence</p>
-                <p className="mt-2 rounded-2xl border border-[color:var(--line)] bg-white/60 px-4 py-3 text-sm italic text-slate-600 dark:bg-slate-900/40 dark:text-slate-300">
+                <p className="mt-2 rounded-2xl border border-[color:var(--line)] bg-white/65 px-4 py-3 text-sm italic text-slate-600">
                   {item.quote}
                 </p>
               </div>
@@ -80,11 +80,11 @@ export function DecisionPanel({ items }: { items: Decision[] }) {
         return (
           <article key={`${item.decision_text}-${idx}`} className="panel-strong rounded-[1.35rem] p-5">
             <p className="section-title">Decision Note {String(idx + 1).padStart(2, "0")}</p>
-            <h4 className="mt-2 text-xl font-semibold text-slate-900 dark:text-slate-100">{item.decision_text}</h4>
+            <h4 className="mt-2 text-xl font-semibold text-slate-900">{item.decision_text}</h4>
 
             <div className="mt-4 rounded-2xl border border-[color:var(--line)] bg-white/70 p-4 dark:bg-slate-900/40">
               <p className="section-title">Purpose</p>
-              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{purpose}</p>
+              <p className="mt-2 text-sm font-semibold text-slate-900">{purpose}</p>
             </div>
 
             <div className="mt-4">
