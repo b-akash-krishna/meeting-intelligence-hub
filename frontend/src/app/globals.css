@@ -185,3 +185,37 @@ button, input { font: inherit; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(62,44,35,0.2); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Markdown Chat Prose ── */
+.markdown-prose p { margin-bottom: 0.75rem; }
+.markdown-prose p:last-child { margin-bottom: 0; }
+.markdown-prose strong { font-weight: 700; color: inherit; }
+.markdown-prose ul { list-style-type: disc; margin-left: 1.25rem; margin-bottom: 0.75rem; }
+.markdown-prose ol { list-style-type: decimal; margin-left: 1.25rem; margin-bottom: 0.75rem; }
+.markdown-prose li { margin-bottom: 0.25rem; }
+.markdown-prose ul:last-child, .markdown-prose ol:last-child { margin-bottom: 0; }
+
+/* ── Markdown Tables ── */
+.markdown-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
+.markdown-prose th {
+  background: var(--accent-soft);
+  color: var(--accent);
+  text-align: left;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+}
+.markdown-prose td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  color: var(--foreground);
+}
+.markdown-prose tr:nth-child(even) {
+  background: rgba(0,0,0,0.02);
+}
+

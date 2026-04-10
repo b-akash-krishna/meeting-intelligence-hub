@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { MessageSquare, Send, X, Bot, User } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { ChatMessage, ChatResponse, ChatSource } from "@/types/meeting";
 
 interface DrawerMessage extends ChatMessage { sources?: ChatSource[]; }
@@ -105,7 +107,9 @@ export default function ChatDrawer({ meetingId = null }: { meetingId?: string | 
                       : { background: "var(--background)", border: "1px solid var(--line)", color: "var(--foreground)", borderBottomLeftRadius: "4px" }
                   }
                 >
-                  <p className="whitespace-pre-wrap">{msg.text}</p>
+                  <div className="markdown-prose text-sm leading-relaxed">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
+                  </div>
                   {msg.sources && msg.sources.length > 0 && (
                     <div className="mt-2 pt-2 text-xs" style={{ borderTop: msg.role === "human" ? "1px solid rgba(255,255,255,0.3)" : "1px solid var(--line)" }}>
                       <p className="font-semibold mb-1" style={{ color: msg.role === "human" ? "rgba(255,255,255,0.85)" : "var(--accent)" }}>
