@@ -1,0 +1,151 @@
+WEBVTT
+
+00:00:04.000 --> 00:00:11.500
+Priya: Alright let's get started. Thanks everyone for joining. Today's agenda is a Q2 launch review — we need to nail down our go-live date, flag any blockers, and agree on what makes the cut.
+
+00:00:12.000 --> 00:00:19.000
+Rahul: Before we dive in, I want to flag upfront that we have a hard engineering constraint around the payment gateway. I'll get into that in a bit.
+
+00:00:19.500 --> 00:00:26.000
+Priya: Noted. Let's do a quick status round first. Sarah, where's the design side?
+
+00:00:26.500 --> 00:00:42.000
+Sarah: Design is about 85 percent done. The onboarding flow is finalized, the dashboard screens are done, but the notification preferences screen still needs a revision pass. I can have that ready by end of next week, so April 18th at the latest.
+
+00:00:42.500 --> 00:00:51.000
+Priya: Good. Rahul, engineering?
+
+00:00:51.500 --> 00:01:12.000
+Rahul: Core features are in good shape. Authentication, user profiles, the main feed, and the search module are all code-complete and in QA. The issue is the Stripe payment integration. Their new API version has a breaking change we didn't anticipate, and we're waiting on their sandbox environment to be updated before we can test. Best case, that unblocks us by April 20th. Worst case, we're looking at April 25th.
+
+00:01:12.500 --> 00:01:23.000
+Arun: That's a problem. Marketing has already started teasing the April 22nd launch on our social channels. We have a campaign ready to go. Moving it now is going to cost us momentum.
+
+00:01:23.500 --> 00:01:34.000
+Rahul: I understand that, but I can't commit to a date when a critical integration is blocked by a third party. Shipping a broken checkout flow would be worse than a minor delay.
+
+00:01:34.500 --> 00:01:45.000
+Priya: Fair point from both sides. Arun, how much flexibility do we actually have? Is April 22nd a hard date or a soft target?
+
+00:01:45.500 --> 00:01:58.000
+Arun: It's soft in the sense that we haven't sent the final email blast yet. But we've got an influencer lined up to post on the 22nd, and rescheduling that coordination is painful. I'd need at least a week's notice to adjust.
+
+00:01:58.500 --> 00:02:09.000
+Priya: Okay. So if Rahul's team resolves the Stripe issue by April 20th, can we still hit April 22nd with two days of final testing?
+
+00:02:09.500 --> 00:02:22.000
+Rahul: Two days is very tight. I'd want at minimum three days of end-to-end testing on the payment flow specifically. So realistically April 23rd for a launch. But I want to be clear — that's only if Stripe unblocks us on the 20th.
+
+00:02:22.500 --> 00:02:35.000
+Priya: Alright. We'll plan for April 23rd as our target, with April 28th as the fallback if the Stripe dependency slips. Arun, can you work with that?
+
+00:02:35.500 --> 00:02:44.000
+Arun: April 23rd works. I'll reach out to the influencer today to secure a flexible window. And I'll pause the final campaign emails until we get confirmation.
+
+00:02:44.500 --> 00:02:53.000
+Priya: Good. That's a decision then. April 23rd is our working launch target, with April 28th as the hard fallback. Let's document that.
+
+00:02:53.500 --> 00:03:08.000
+Sarah: One thing I want to raise about the launch scope. The analytics dashboard — the one showing user engagement graphs — is really rough. It works technically but it doesn't look good enough to ship. I'd recommend we cut it from v1 and launch with just the core metrics tile instead.
+
+00:03:08.500 --> 00:03:18.000
+Priya: How much work would it take to bring the analytics dashboard to launch quality?
+
+00:03:18.500 --> 00:03:28.000
+Sarah: Honest answer — probably eight to ten hours of design work plus whatever Rahul's team needs to wire it up properly.
+
+00:03:28.500 --> 00:03:38.000
+Rahul: From engineering, we'd need about two days to refactor the data aggregation layer. The current implementation is a bit hacky. It's not launch-quality code.
+
+00:03:38.500 --> 00:03:52.000
+Priya: We don't have that buffer. I agree with Sarah — we cut the full analytics dashboard from v1. We'll ship the basic metrics tile and schedule the analytics dashboard for v1.1. Rahul, add that to the backlog with a target of four weeks post-launch.
+
+00:03:52.500 --> 00:03:59.000
+Rahul: Done. I'll create the ticket and assign it to Meera — she owns that module.
+
+00:03:59.500 --> 00:04:13.000
+Arun: I need to flag a marketing dependency too. We need three or four app screenshots for the Product Hunt launch post and the App Store listing — these need to be real screens, not mockups. Sarah, is that something you can pull together?
+
+00:04:13.500 --> 00:04:24.000
+Sarah: Yes, I can do that. I'll generate polished screenshots from the finalized screens once the notification preferences revision is done. So you'll have them by April 19th.
+
+00:04:24.500 --> 00:04:33.000
+Arun: Perfect. I also need a one-paragraph product description from Priya for the App Store submission. Can you write that?
+
+00:04:33.500 --> 00:04:41.000
+Priya: Absolutely. I'll write that and share it in Slack by end of day today.
+
+00:04:41.500 --> 00:04:55.000
+Rahul: Can someone own the App Store submission itself? I don't have Apple developer portal access and I'm not the right person to navigate that process.
+
+00:04:55.500 --> 00:05:05.000
+Arun: I can own it. I've done App Store submissions before. I'll need the final build from Rahul once testing is done, and then I'll handle the submission process.
+
+00:05:05.500 --> 00:05:17.000
+Rahul: I'll send Arun the release build via TestFlight once we're done with QA. Let's say April 22nd for the build handoff, assuming launch is April 23rd.
+
+00:05:17.500 --> 00:05:29.000
+Priya: Good. Let's confirm ownership: Arun owns the App Store submission, Rahul provides the build by April 22nd, Sarah provides screenshots by April 19th, and I'll send the product description to Arun by today.
+
+00:05:29.500 --> 00:05:40.000
+Arun: One more marketing item. We're planning a launch day referral campaign where users get a free month if they refer three friends. I need engineering to build the referral tracking before launch.
+
+00:05:40.500 --> 00:05:54.000
+Rahul: That's a new request that wasn't in scope. Referral tracking requires a backend service, a referral code system, and UI changes. We're talking four to five days of engineering work. There's absolutely no way we fit that in before April 23rd.
+
+00:05:54.500 --> 00:06:04.000
+Arun: I understand the constraint, but a referral campaign at launch is a significant growth driver. Can we at least do a lightweight version?
+
+00:06:04.500 --> 00:06:18.000
+Rahul: The lightest version I could imagine would take two days minimum, and it would be fragile. I really don't want to introduce a new untested system days before launch.
+
+00:06:18.500 --> 00:06:31.000
+Priya: I'm going to make a call here. Referral campaign is deferred to v1.1 alongside the analytics dashboard. We won't rush it. Arun, we'll plan a post-launch referral push for two weeks after go-live when things are stable.
+
+00:06:31.500 --> 00:06:40.000
+Arun: Understood. Disappointing but I get it. I'll adjust the campaign plan to focus on word-of-mouth and organic rather than a formal referral mechanic.
+
+00:06:40.500 --> 00:06:52.000
+Priya: One last thing before we wrap. QA status — Rahul, where are we on test coverage? Are there any known critical bugs right now?
+
+00:06:52.500 --> 00:07:10.000
+Rahul: We have one open critical bug on iOS — a crash on first launch for users with older iOS versions, specifically iOS 15. It happens about 30 percent of the time. Dev thinks it's a SwiftUI compatibility issue. I've assigned it to Kiran and expecting a fix by April 17th.
+
+00:07:10.500 --> 00:07:21.000
+Priya: That's a launch blocker if it's not fixed. Please escalate it — I want daily updates on that bug until it's resolved. Kiran needs to treat it as P0.
+
+00:07:21.500 --> 00:07:32.000
+Rahul: Agreed. I'll send Kiran a message right after this call and make it explicit that this is P0 with a hard deadline of April 17th.
+
+00:07:32.500 --> 00:07:45.000
+Sarah: I also want to flag one UX issue we caught in user testing last week. On Android, the text field on the login screen is getting partially covered by the keyboard. It's not a crash, but it's a bad first impression for new users.
+
+00:07:45.500 --> 00:07:55.000
+Rahul: I know exactly what that is — it's a window insets issue. Takes about two hours to fix. I'll assign it to Dev and we'll have it done by April 16th.
+
+00:07:55.500 --> 00:08:05.000
+Priya: Thank you. Let's confirm decisions and next steps before we close.
+
+00:08:05.500 --> 00:08:25.000
+Priya: Decisions made today: one — launch target is April 23rd with April 28th as the hard fallback. Two — analytics dashboard is cut from v1 and scheduled for v1.1. Three — referral campaign is deferred to v1.1, planned for two weeks post-launch. Four — iOS 15 crash is a P0 launch blocker, deadline April 17th.
+
+00:08:25.500 --> 00:08:45.000
+Priya: Action items: Rahul escalates the iOS 15 crash to Kiran as P0 by end of today. Rahul assigns the Android keyboard bug to Dev with a deadline of April 16th. Sarah finalizes notification preferences screen by April 18th. Sarah provides app screenshots to Arun by April 19th. Priya sends product description to Arun by end of day today. Rahul sends release build to Arun via TestFlight by April 22nd. Arun submits to the App Store and manages launch coordination.
+
+00:08:45.500 --> 00:08:56.000
+Rahul: One more thing — I'd like us to do a final go/no-go call on April 21st to confirm everything is green before the launch on the 23rd.
+
+00:08:56.500 --> 00:09:05.000
+Priya: Good idea. I'll send a calendar invite for April 21st, 10 AM. Attendance mandatory for all four of us. If everything is green on the 21st, we proceed. If not, we have the 28th fallback.
+
+00:09:05.500 --> 00:09:14.000
+Arun: Works for me. I'll have the campaign fully ready to activate on either date by then.
+
+00:09:14.500 --> 00:09:22.000
+Sarah: I'll make sure all design assets are delivered before the 21st so there are no surprises.
+
+00:09:22.500 --> 00:09:30.000
+Rahul: Same from engineering. If the Stripe situation resolves on time, we'll be in good shape.
+
+00:09:30.500 --> 00:09:38.000
+Priya: Great. Thanks everyone. Let's execute on this and check in asynchronously on Slack. We'll reconvene on the 21st.

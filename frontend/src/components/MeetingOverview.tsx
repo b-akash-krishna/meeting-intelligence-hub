@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Activity, CheckSquare, FileText, Target, TrendingUp, Users } from "lucide-react";
 
 import FileUpload from "@/components/FileUpload";
@@ -39,16 +40,20 @@ export default function MeetingOverview() {
     speakers: session?.speakerSummary.length ?? 0,
   };
 
+  // Prevent SSR/client hydration mismatch — session lives in localStorage
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   return (
     <WorkspaceShell eyebrow="Overview" title="Meeting Intelligence Hub">
-      <div className="space-y-5">
+      <div className="space-y-5" suppressHydrationWarning>
         {/* Upload Panel */}
         <div className="panel rounded-2xl p-5 sm:p-7">
           <FileUpload onUploadSuccess={saveUpload} />
         </div>
 
-        {/* Stats + Session Info */}
-        {session ? (
+        {/* Stats — only render client-side to avoid hydration mismatch */}
+        {mounted && session ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {metricCards.map(({ key, label, icon: Icon, color }) => (
               <div key={key} className="panel rounded-2xl p-4 flex items-center gap-3">
@@ -94,15 +99,15 @@ export default function MeetingOverview() {
                   {label}
                 </p>
                 <p className="text-xs ink-muted mt-0.5">
-                  {session ? `${values[label.toLowerCase() as keyof typeof values] ?? "→"} items` : "Upload first"}
+                  {mounted && session ? `${values[label.toLowerCase() as keyof typeof values] ?? "→"} items` : "Upload first"}
                 </p>
               </div>
             </Link>
           ))}
         </div>
 
-        {/* Session Brief (only when data exists) */}
-        {session && (
+        {/* Session Brief */}
+        {mounted && session && (
           <div className="panel rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div>

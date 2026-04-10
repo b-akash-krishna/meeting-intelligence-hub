@@ -56,14 +56,16 @@ def build_citation(chunk: Dict) -> str:
 
 
 def upsert_transcript_chunks(meeting_id: str, chunks: List[Dict]):
-    """Embeds parsed chunks into Pinecone with citation metadata."""
+    """Embeds all parsed chunks in one batched call then upserts to Pinecone."""
     if not chunks:
         return
 
     texts = []
     metadatas = []
     ids = []
-    for idx, chunk in enumerate(chunks):
+    # Only embed non-empty chunks to save quota
+    valid_chunks = [c for c in chunks if c.get("text", "").strip()]
+    for idx, chunk in enumerate(valid_chunks):
         citation = build_citation(chunk)
         texts.append(f"{citation}: {chunk['text']}")
         metadatas.append(
@@ -80,7 +82,12 @@ def upsert_transcript_chunks(meeting_id: str, chunks: List[Dict]):
         ids.append(f"{meeting_id}-{idx}")
 
     print(f"[{meeting_id}] Embedding and storing {len(texts)} chunks to Pinecone...")
-    embeddings = get_embeddings().embed_documents(texts)
-    vector_store = get_vector_store()
-    vectors = list(zip(ids, embeddings, metadatas))
-    vector_store._index.upsert(vectors=vectors)
+    try:
+        embeddings = get_embeddings().embed_documents(texts)
+        vector_store = get_vector_store()
+        vectors = list(zip(ids, embeddings, metadatas))
+        vector_store._index.upsert(vectors=vectors)
+        print(f"[{meeting_id}] Pinecone upsert complete ({len(vectors)} vectors)")
+    except Exception as e:
+        # Embedding quota or Pinecone errors are non-fatal — chat RAG is best-effort
+        print(f"[{meeting_id}] Pinecone upsert skipped (quota/network error): {type(e).__name__}: {str(e)[:120]}")
