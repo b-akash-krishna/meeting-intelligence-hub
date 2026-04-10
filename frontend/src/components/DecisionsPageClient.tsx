@@ -24,7 +24,7 @@ export default function DecisionsPageClient() {
         <div className="panel rounded-[1.75rem] p-6">
           <div className="border-b border-[color:var(--line)] pb-4">
             <p className="section-title">Decision Register</p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">Business Decisions</h2>
+            <h2 className="mt-2 text-2xl font-semibold" style={{ fontFamily: "var(--font-heading, 'Plus Jakarta Sans', sans-serif)", fontWeight: 700, color: "var(--foreground)" }}>Business Decisions</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 ink-muted">
               Decisions are organized here as a readable operating log, with explicit purpose tags and supporting reasoning so the outcome can be understood without scanning the entire meeting transcript.
             </p>

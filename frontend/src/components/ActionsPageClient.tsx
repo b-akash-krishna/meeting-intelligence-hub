@@ -24,7 +24,7 @@ export default function ActionsPageClient() {
         <div className="panel rounded-[1.75rem] p-6">
           <div className="border-b border-[color:var(--line)] pb-4">
             <p className="section-title">Execution Ledger</p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">Assigned Action Items</h2>
+            <h2 className="mt-2 text-2xl font-semibold" style={{ fontFamily: "var(--font-heading, 'Plus Jakarta Sans', sans-serif)", fontWeight: 700, color: "var(--foreground)" }}>Assigned Action Items</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 ink-muted">
               Each update below is framed as a concrete follow-through item so users can quickly understand the owner, the intent behind the request, and what evidence in the transcript supports it.
             </p>

@@ -1,106 +1,100 @@
-# Meeting Intelligence Hub Design Document
+# Meeting Intelligence Hub — Design Document
 
-## Objective
-Meeting Intelligence Hub converts raw meeting transcripts into useful team memory. The MVP focuses on four practical outcomes:
-- extract action items
-- extract decisions
-- let users ask cited questions over uploaded meetings
-- show lightweight sentiment and speaker tone signals
+**Cymonic AI Sprint | April 2026**
 
-## Problem
-Meeting transcripts are long, noisy, and rarely revisited. Teams need a fast way to answer:
-- What was decided?
-- Who owns what?
-- What was the tone of the discussion?
-- Where in the meeting did a claim come from?
+---
 
-## MVP Architecture
-### Frontend
-- Next.js dashboard
-- Drag-and-drop upload
-- Insights tables for actions and decisions
-- Sentiment timeline and speaker summary
-- Chat drawer for cited questions
-- CSV export for extracted results
+## Problem Statement
 
-### Backend
-- FastAPI service
-- Transcript parsing for `.txt` and `.vtt`
-- LLM extraction pipeline for action items and decisions
-- Pinecone-backed retrieval for chat
-- Heuristic sentiment analysis for timeline and speaker summary
+Meeting transcripts are long, noisy, and rarely revisited. Teams lose hours re-meeting to clarify points that were already discussed. The core problem is not *generating* transcripts — that is solved. The unsolved challenge is extracting structured, queryable intelligence from meetings and making it available without reading a 20-page document.
 
-### External Services
-- Groq: primary chat and structured extraction
-- Gemini: fallback chat plus embeddings
-- Pinecone: vector index for transcript retrieval
+This system answers four critical questions from any uploaded transcript:
+1. **What was decided?** (Decision register)
+2. **Who owns what?** (Action item ledger)
+3. **What was the tone?** (Sentiment timeline)
+4. **Where exactly did a claim come from?** (RAG chat with cited evidence)
 
-## Data Flow
-1. User uploads a transcript from the frontend.
-2. FastAPI parses the file into timestamped chunks.
-3. Chunks are sent through the extraction pipeline.
-4. Chunks are embedded and stored in Pinecone.
-5. Sentiment windows and speaker summaries are derived from the parsed chunks.
-6. The backend returns a combined insight payload to the frontend.
-7. The user can ask questions, and the backend retrieves relevant chunks from Pinecone before generating a cited answer.
+---
+
+## Solution Architecture
+
+### Data Flow
+```
+User uploads .vtt / .txt
+        ↓
+FastAPI parses → timestamped speaker chunks
+        ↓
+Parallel pipelines:
+  ├── LLM Extraction (Groq → Gemini fallback)
+  │       → ActionItem[], Decision[]
+  ├── Heuristic Sentiment
+  │       → Timeline windows + speaker summary
+  └── Embedding → Pinecone upsert
+        ↓
+Combined InsightsPayload → Frontend
+        ↓
+User asks question → Pinecone retrieval → LLM answer + citations
+```
+
+### Components
+
+| Layer | Technology | Role |
+|---|---|---|
+| Frontend | Next.js 16, React 19, Tailwind CSS v4 | Premium dark-mode dashboard |
+| Backend | FastAPI, Uvicorn | Async REST API orchestration |
+| LLM Extraction | LangChain + Groq `llama-3.1-8b-instant` | Structured JSON action/decision extraction |
+| LLM Fallback | Gemini `gemini-2.5-flash` | Automatic fallback on Groq failures |
+| Embeddings | Gemini `gemini-embedding-001` (768-dim) | Semantic transcript chunk indexing |
+| Vector Store | Pinecone | RAG retrieval with citation metadata |
+| Data Validation | Pydantic v2 | Strict typed schemas throughout |
+
+---
 
 ## Key Design Choices
-### FastAPI + Next.js
-This combination gives a cleaner MVP than a notebook or Streamlit-style stack. FastAPI is a good fit for async API calls and Next.js gives a stronger presentation layer for the internship rubric.
 
-### LLM Extraction + Heuristic Sentiment
-Actions and decisions benefit from LLM reasoning, so they use structured extraction. Sentiment is implemented heuristically in the MVP to avoid extra cost, reduce latency, and keep the system reliable enough for demos.
+### Why FastAPI + Next.js, not Streamlit?
+Streamlit gives you a working prototype in 30 minutes, but the output looks like a prototype. FastAPI + Next.js gives a proper API contract and a premium UI that scores on the Innovation & Presentation rubric (20%). The gap in judge perception is significant.
 
-### Pinecone for Meeting Memory
-Vector retrieval makes the chat feature practical across uploaded transcripts. It also allows citations to be grounded in the original chunk text.
+### Why Groq as primary LLM?
+Groq inference is 10–20× faster than OpenAI for the same model class at free-tier quotas. For a demo that needs to process a real-world VTT file in a reasonable time, this matters. Gemini is configured as a `with_fallbacks()` chain so the system degrades gracefully.
 
-### Rate-Limited Extraction
-Long transcripts can easily hit free-tier rate limits. The extraction pipeline was intentionally throttled to reduce burst failures during realistic uploads.
+### Why heuristic sentiment instead of a second LLM call?
+Running an LLM pass on every 5-minute window of a 60-minute transcript would use ~12 inference calls just for sentiment, on top of the extraction pipeline. The heuristic keyword classifier is deterministic, instant, and sufficient for a dashboard indicator. The tradeoff is documented.
 
-## Current MVP Scope
-### Included
-- `.txt` and `.vtt` transcript support
-- action item extraction
-- decision extraction
-- cited chat
-- meeting vibe timeline
-- per-speaker tone summary
-- CSV export
+### Why rate-limit extraction to 3 concurrent calls?
+Free-tier Groq and Gemini quotas can spike on long transcripts. Throttling to `MAX_EXTRACTION_CONCURRENCY = 3` eliminates burst failures during demos without meaningfully slowing down a typical meeting file.
 
-### Deferred
-- PDF export
-- persistent relational storage for meetings and insights
-- stronger meeting/session isolation in retrieval
-- better deduplication of similar retrieval chunks
-- model-based sentiment classification
-- polished admin/demo workflows
+### Why Pinecone instead of a local vector store?
+Pinecone handles the embedding dimension, index management, and pagination concerns that would require boilerplate with a local store like Chroma or FAISS. For a 14-day sprint, this is the right abstraction.
 
-## Tradeoffs
-### Why not persist everything in Postgres yet?
-The MVP optimizes for working AI flows first. Postgres-backed meeting history is valuable, but not required to demonstrate the core intelligence loop.
+---
 
-### Why heuristic sentiment instead of another model pass?
-The main risk during the sprint is system instability under API quotas. A heuristic approach is cheaper, simpler, and sufficient for an MVP dashboard.
+## Tradeoffs & What I Would Improve With More Time
 
-### Why not batch all extraction into one giant prompt?
-Chunk-level extraction keeps citations easier to trace and reduces failure impact when one LLM call fails.
+| Area | Current MVP | With More Time |
+|---|---|---|
+| **Persistence** | In-memory session (lost on refresh) | PostgreSQL via Supabase for meeting history |
+| **Sentiment** | Keyword heuristic | LLM-based vibe classification per window |
+| **RAG isolation** | Pinecone metadata filter by meeting_id | Stricter namespace separation + chunk deduplication |
+| **Export** | CSV, JSON, Markdown | PDF via `weasyprint` or `reportlab` |
+| **Auth** | None | NextAuth.js with org-level meeting namespacing |
+| **Multi-meeting** | Single session | Cross-meeting RAG with meeting selector |
+| **Extraction quality** | Chunk-level extraction | Full-transcript consolidation pass to merge duplicates |
 
-## Risks
-- Groq and Gemini free-tier limits can affect long transcripts
-- retrieval can surface duplicate or overly similar chunks
-- extraction quality is acceptable for MVP but still needs normalization
-- Pinecone index configuration must stay compatible with the configured embedding dimension
+---
 
-## Success Criteria
-The MVP is successful if a reviewer can:
-- upload a realistic meeting transcript
-- see action items and decisions extracted automatically
-- ask a meeting question and get a cited answer
-- inspect a sentiment summary and speaker overview
-- export the output in a simple format
+## Risks Encountered
 
-## Next Steps
-- improve extraction quality and deduplication
-- add PDF export
-- add better index hygiene and meeting scoping
-- produce a short demo walkthrough using the sample meeting files
+- **Free-tier rate limits** on Groq and Gemini during long transcripts — mitigated via concurrency limiting and fallback chains
+- **Windows EPERM error** with Next.js Turbopack's file watcher — mitigated via `npx next dev` workaround (documented in README)
+- **768-dim Pinecone constraint** — Gemini embeddings default to larger dimensions; fixed via `ReducedDimensionEmbeddings` wrapper with `output_dimensionality=768`
+
+---
+
+## Success Criteria (All Met)
+
+- ✅ Upload a realistic meeting transcript
+- ✅ See action items and decisions extracted automatically with LLM
+- ✅ Ask a cited question and get a grounded answer with timestamps
+- ✅ Inspect a sentiment timeline and per-speaker tone summary
+- ✅ Export the output in CSV, JSON, or Markdown
